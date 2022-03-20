@@ -1,17 +1,15 @@
 import "dotenv/config";
 import Fastify, { FastifyReply, FastifyRequest } from "fastify";
-import fastifyAutoload from "fastify-autoload";
 import fastifyCors from "fastify-cors";
-import { join } from "path";
 
 // Instantiate Fastify with some config
 const app = Fastify({
   logger: true,
 });
 
-app.register(fastifyAutoload, {
-  dir: join(__dirname, "Routes"),
-  options: { prefix: "/" },
+// Register your application as a normal plugin.
+app.register(import("../index"), {
+  prefix: "/",
 });
 
 app.register(fastifyCors, {
