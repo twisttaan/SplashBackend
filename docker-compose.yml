@@ -1,0 +1,14 @@
+services:
+  postgres:
+    container_name: splashdb
+    image: 'postgres:latest'
+    ports:
+      - '5432:5432'
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=internalpassword
+    volumes:
+      - 'splashdb:/var/lib/postgresql/data'
+volumes:
+  splashdb:
+    external: true

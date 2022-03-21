@@ -6,4 +6,4 @@ export default async function BaseRouter(fastify: FastifyInstance) {
   });
 }
 
-export const autoPrefix = "/";
+export const autoPrefix = "/v1/post";
