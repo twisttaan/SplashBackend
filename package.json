@@ -1,5 +1,5 @@
 {
-  "name": "vercel-serverless",
+  "name": "splashbackend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,12 +8,13 @@
     "vercel": "vercel dev"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@vercel/node": "^1.11.1"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
-    "fastify": "^3.18.1"
+    "fastify": "^3.18.1",
+    "fastify-autoload": "^3.11.0"
   }
 }
