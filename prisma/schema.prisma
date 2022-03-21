@@ -18,6 +18,7 @@ model User {
     token       String   @unique
     invite      String   @unique
     inviteUsed  String   @unique
+    staff       Boolean  @default(false)
 }
 
 model Post {
