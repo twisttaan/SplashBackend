@@ -1,29 +1,25 @@
 import type { FastifyInstance } from "fastify";
 import Joi from "joi";
-interface postReq {
-  postID: string;
-}
-
 interface postQuery {
-  postID: string;
+  id: string;
 }
 
 export default async function BaseRouter(fastify: FastifyInstance) {
   const { prisma } = fastify;
 
-  fastify.get<{ Body: postReq; Querystring: postQuery }>(
-    "/:postID",
+  fastify.get<{ Querystring: postQuery }>(
+    "/getPost",
     {
       schema: {
-        params: Joi.object().keys({
-          postID: Joi.string().required().length(25),
+        querystring: Joi.object().keys({
+          id: Joi.string().required().length(25),
         }),
       },
     },
     async (request, reply) => {
       const post = await prisma.post.findFirst({
         where: {
-          id: request.query.postID,
+          id: request.query.id,
         },
       });
 
