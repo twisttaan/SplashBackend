@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "vercel": "yarn prisma db push && vercel dev"
+    "build": "yarn prisma db push",
+    "vercel": "vercel dev"
   },
   "author": "",
   "license": "Apache-2.0",
