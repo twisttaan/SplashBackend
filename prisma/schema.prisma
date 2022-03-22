@@ -15,7 +15,6 @@ model User {
     password    String
     posts       Post[]
     createdAt   DateTime @default(now())
-    token       String   @unique
     invite      String   @unique
     inviteUsed  String   @unique
     staff       Boolean  @default(false)

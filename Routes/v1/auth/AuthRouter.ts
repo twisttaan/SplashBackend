@@ -80,8 +80,7 @@ export default async function AuthRouter(fastify: FastifyInstance) {
           displayName: displayName ?? username,
           email,
           password: await hash(password),
-          inviteUsed: inviteCode,
-          token: "",
+          inviteUsed: inviteCode ?? "tristan",
           invite:
             Math.random().toString(36).substring(2, 15) +
             Math.random().toString(36).substring(2, 15),
