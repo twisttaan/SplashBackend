@@ -1,12 +1,12 @@
 import { FastifyInstance } from "fastify";
 
-interface getUserQuery {
+interface getUserParams {
   id: string;
 }
 
 export default async function AuthRouter(fastify: FastifyInstance) {
   const { prisma } = fastify;
-  fastify.get<{ Querystring: getUserQuery }>("/:id", async (request, reply) => {
+  fastify.get<{ Params: getUserParams }>("/:id", async (request, reply) => {
     const id = request.params.id;
     const { authorization } = request.headers;
     const requestor = await prisma.user.findFirst({
