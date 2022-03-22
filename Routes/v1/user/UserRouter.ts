@@ -34,7 +34,14 @@ export default async function AuthRouter(fastify: FastifyInstance) {
     }
 
     return reply.code(200).send({
-      user,
+      user: {
+        id: user.id,
+        username: user.username,
+        displayName: user.displayName,
+        createdAt: user.createdAt,
+        staff: user.staff,
+        inviteUsed: user.inviteUsed,
+      },
     });
   });
 }

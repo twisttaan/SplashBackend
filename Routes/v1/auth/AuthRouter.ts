@@ -87,10 +87,16 @@ export default async function AuthRouter(fastify: FastifyInstance) {
         },
       });
 
-      return reply.send({
-        statusCode: 200,
+      return reply.status(200).send({
         message: `Successfully registered ${newUser.username}`,
-        user: newUser,
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          displayName: newUser.displayName,
+          createdAt: newUser.createdAt,
+          staff: newUser.staff,
+          inviteUsed: newUser.inviteUsed,
+        },
       });
     }
   );
@@ -102,7 +108,6 @@ export default async function AuthRouter(fastify: FastifyInstance) {
         body: Joi.object().keys({
           username: Joi.string().required(),
           password: Joi.string().required(),
-          reCaptchaToken: Joi.string().required(),
         }),
       },
     },
