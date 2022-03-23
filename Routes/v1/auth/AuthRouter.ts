@@ -1,4 +1,4 @@
-import { hash } from "argon2";
+import { hash, verify } from "argon2";
 import { FastifyInstance } from "fastify";
 import Joi from "joi";
 
@@ -101,7 +101,12 @@ export default async function AuthRouter(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post(
+  interface loginBody {
+    username: string;
+    password: string;
+  }
+
+  fastify.post<{ Body: loginBody }>(
     "/login",
     {
       schema: {
@@ -112,6 +117,32 @@ export default async function AuthRouter(fastify: FastifyInstance) {
       },
     },
     async (request) => {
+      const user = await prisma.user.findFirst({
+        where: {
+          username: request.body.username,
+        },
+      });
+
+      if (!user || !(await verify(user.password, request.body.password))) {
+        return {
+          statusCode: 401,
+          message: "Invalid username or password",
+        };
+      }
+
+      return {
+        statusCode: 200,
+        message: "Successfully logged in",
+        user: {
+          id: user.id,
+          username: user.username,
+          displayName: user.displayName,
+          createdAt: user.createdAt,
+          staff: user.staff,
+          inviteUsed: user.inviteUsed,
+        },
+      };
+
       return {
         statusCode: 200,
         message: "Successfully logged in",
