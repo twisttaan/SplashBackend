@@ -1,5 +1,6 @@
-import { hash, verify } from "argon2";
+import { hash } from "argon2";
 import { FastifyInstance } from "fastify";
+import fastifyPassport from "fastify-passport";
 import Joi from "joi";
 
 interface registerBody {
@@ -40,7 +41,6 @@ export default async function AuthRouter(fastify: FastifyInstance) {
 
       if (!userThatUsedInvite) {
         return reply.code(400).send({
-          statusCode: 400,
           message: "Invalid or already used Invite Code.",
         });
       }
@@ -66,7 +66,6 @@ export default async function AuthRouter(fastify: FastifyInstance) {
 
       if (checkUser) {
         return reply.code(400).send({
-          statusCode: 400,
           message:
             checkUser.username === username
               ? "Username already taken"
@@ -115,23 +114,32 @@ export default async function AuthRouter(fastify: FastifyInstance) {
           password: Joi.string().required(),
         }),
       },
-    },
-    async (request) => {
-      const user = await prisma.user.findFirst({
-        where: {
-          username: request.body.username,
-        },
-      });
+      preHandler: [
+        fastifyPassport.authenticate(
+          "local",
+          async function (request, reply, _, user) {
+            if (!user) {
+              return reply.code(401).send({
+                message: "Invalid username or password.",
+              });
+            }
 
-      if (!user || !(await verify(user.password, request.body.password))) {
-        return {
-          statusCode: 401,
-          message: "Invalid username or password",
-        };
+            request.logIn(user);
+          }
+        ),
+      ],
+    },
+
+    async (request, reply) => {
+      const { user } = request;
+
+      if (!user) {
+        return reply.code(400).send({
+          message: "Missing user!",
+        });
       }
 
-      return {
-        statusCode: 200,
+      return reply.code(200).send({
         message: "Successfully logged in",
         user: {
           id: user.id,
@@ -140,13 +148,9 @@ export default async function AuthRouter(fastify: FastifyInstance) {
           createdAt: user.createdAt,
           staff: user.staff,
           inviteUsed: user.inviteUsed,
+          token: user.password,
         },
-      };
-
-      return {
-        statusCode: 200,
-        message: "Successfully logged in",
-      };
+      });
     }
   );
 }

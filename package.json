@@ -11,6 +11,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@prisma/client": "^3.11.0",
+    "@types/passport-local": "^1.0.34",
     "@vercel/node": "^1.11.1"
   },
   "dependencies": {
@@ -19,7 +20,12 @@
     "fastify": "^3.18.1",
     "fastify-autoload": "^3.11.0",
     "fastify-cors": "^6.0.3",
+    "fastify-helmet": "^7.0.1",
+    "fastify-passport": "^0.5.0",
+    "fastify-rate-limit": "^5.8.0",
+    "fastify-secure-session": "^3.0.0",
     "joi": "^17.6.0",
+    "passport-local": "^1.0.0",
     "prisma": "^3.11.0"
   }
 }
