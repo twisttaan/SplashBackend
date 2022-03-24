@@ -4,12 +4,17 @@ import "dotenv/config";
 import Fastify from "fastify";
 import fastifyAutoload from "fastify-autoload";
 import fastifyCors from "fastify-cors";
+import fastifyHelmet from "fastify-helmet";
 import fastifyPassport from "fastify-passport";
+import fastifyRateLimit from "fastify-rate-limit";
 import fastifySecureSession from "fastify-secure-session";
-import { Strategy } from "passport-local";
+import { IVerifyOptions, Strategy } from "passport-local";
 import { join } from "path";
+
 /** Create a new Fastify instance */
-const app = Fastify();
+const app = Fastify({
+  trustProxy: true,
+});
 
 app.prisma = new PrismaClient();
 
@@ -23,13 +28,16 @@ declare module "fastify" {
   }
 }
 
-/** Add CORS Support */
 app.register(fastifyCors, {
   origin: ["https://splash.evie.pw", /^http:\/\/localhost:\d+$/],
   credentials: true,
 });
 
-/** Add Secure Session Support */
+app.register(fastifyRateLimit, {
+  timeWindow: 1000 * 60,
+  max: 20,
+});
+
 app.register(fastifySecureSession, {
   key: Buffer.from(process.env.COOKIE_KEY as string, "hex"),
   cookie: {
@@ -37,16 +45,17 @@ app.register(fastifySecureSession, {
   },
 });
 
-/** Add Passport Support */
+app.register(fastifyHelmet);
+
 app.register(fastifyPassport.initialize());
 app.register(fastifyPassport.secureSession());
 
 fastifyPassport.use(
   new Strategy(
     async (
-      username: any,
-      password: string | Buffer,
-      done: (arg0: null, arg1: User | boolean) => any
+      username: string,
+      password: string,
+      done: (error: any, user?: any, options?: IVerifyOptions) => void
     ) => {
       const user = await app.prisma.user.findFirst({
         where: {
@@ -68,13 +77,14 @@ fastifyPassport.use(
       });
 
       if (!user || !(await verify(user.password, password))) {
-        return done(null, false);
+        return done(null);
       }
 
       return done(null, user);
     }
   )
 );
+
 fastifyPassport.registerUserSerializer(async (user: User) => user.id);
 fastifyPassport.registerUserDeserializer(async (id: string) => {
   console.log(`Deserializing user ${id}`);
@@ -83,19 +93,19 @@ fastifyPassport.registerUserDeserializer(async (id: string) => {
   });
 });
 
-/** Load all routes */
 app.register(fastifyAutoload, {
-  dir: join(__dirname, "../Routes"),
+  dir: join(__dirname, "./Routes"),
 });
 
-/** Use Joi */
 // @ts-expect-error Argument of type '({ schema }: FastifyRouteSchemaDef<FastifySchema>) => (data: any) => ValidationResult | null' is not assignable to parameter of type 'FastifySchemaCompiler<FastifySchema>'.
 app.setValidatorCompiler(({ schema }) => {
   return (data) => (schema.validate ? schema.validate(data) : null);
 });
 
-/** Vercel Hook */
-export default async (req: any, res: any) => {
-  await app.ready();
-  app.server.emit("request", req, res);
-};
+app.listen(process.env.PORT ?? 3000, (err, address) => {
+  if (err) {
+    console.trace(err);
+    process.exit(1);
+  }
+  console.log(`Server listening on ${address}`);
+});

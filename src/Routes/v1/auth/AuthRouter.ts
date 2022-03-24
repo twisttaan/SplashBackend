@@ -114,20 +114,18 @@ export default async function AuthRouter(fastify: FastifyInstance) {
           password: Joi.string().required(),
         }),
       },
-      preHandler: [
-        fastifyPassport.authenticate(
-          "local",
-          async function (request, reply, _, user) {
-            if (!user) {
-              return reply.code(401).send({
-                message: "Invalid username or password.",
-              });
-            }
-
-            request.logIn(user);
+      preValidation: fastifyPassport.authenticate(
+        "local",
+        async function (request, reply, _, user) {
+          if (!user) {
+            return reply.code(401).send({
+              message: "Invalid username or password.",
+            });
           }
-        ),
-      ],
+
+          request.logIn(user);
+        }
+      ),
     },
 
     async (request, reply) => {
@@ -141,15 +139,7 @@ export default async function AuthRouter(fastify: FastifyInstance) {
 
       return reply.code(200).send({
         message: "Successfully logged in",
-        user: {
-          id: user.id,
-          username: user.username,
-          displayName: user.displayName,
-          createdAt: user.createdAt,
-          staff: user.staff,
-          inviteUsed: user.inviteUsed,
-          token: user.password,
-        },
+        user: request.user,
       });
     }
   );

@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "commonjs",
-    "outDir": ".",
-    "rootDir": ".",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "alwaysStrict": true,
     "moduleResolution": "node",
@@ -12,6 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "lib": ["ESNext", "DOM"]
   },
-  "include": ["."],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

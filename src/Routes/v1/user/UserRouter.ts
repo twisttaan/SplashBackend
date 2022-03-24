@@ -10,6 +10,9 @@ export default async function AuthRouter(fastify: FastifyInstance) {
 
     async (request, reply) => {
       const id = request.params.id;
+
+      console.log(request.user);
+
       if (!request.user) {
         return reply.code(401).send({
           message: "Unauthorized, no session.",
