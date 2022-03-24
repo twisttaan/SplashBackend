@@ -102,7 +102,7 @@ app.setValidatorCompiler(({ schema }) => {
   return (data) => (schema.validate ? schema.validate(data) : null);
 });
 
-app.listen(process.env.PORT ?? 3000, (err, address) => {
+app.listen(process.env.PORT ?? 3000, "0.0.0.0", (err, address) => {
   if (err) {
     console.trace(err);
     process.exit(1);
