@@ -27,6 +27,10 @@ export default async function AuthRouter(fastify: FastifyInstance) {
             },
           ],
         },
+        include: {
+          followers: true,
+          following: true,
+        },
       });
 
       if (!user) {
@@ -44,6 +48,8 @@ export default async function AuthRouter(fastify: FastifyInstance) {
             displayName: user.displayName,
             createdAt: user.createdAt,
             staff: user.staff,
+            following: user.following,
+            followers: user.followers,
           },
         });
       }
@@ -56,6 +62,8 @@ export default async function AuthRouter(fastify: FastifyInstance) {
           createdAt: user.createdAt,
           staff: user.staff,
           inviteUsed: user.inviteUsed,
+          following: user.following,
+          followers: user.followers,
         },
       });
     }

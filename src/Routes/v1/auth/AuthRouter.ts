@@ -105,6 +105,13 @@ export default async function AuthRouter(fastify: FastifyInstance) {
     password: string;
   }
 
+  fastify.post("/logout", async (request, reply) => {
+    request.logout();
+    return reply.code(200).send({
+      message: "Successfully yeeted the user's auth cookies!",
+    });
+  });
+
   fastify.post<{ Body: loginBody }>(
     "/login",
     {

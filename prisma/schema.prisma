@@ -18,6 +18,8 @@ model User {
     invite      String   @unique
     inviteUsed  String   @unique
     staff       Boolean  @default(false)
+    followers   User[]   @relation("UserToUser")
+    following   User[]   @relation("UserToUser")
 }
 
 model Post {

@@ -9,7 +9,7 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "dev": "nodemon -e .ts,.html,.env --ignore dist/ --exec \"clear && yarn run build && yarn run start || exit 1\"",
-    "prisma": "yarn prisma db push"
+    "prisma": "yarn run prisma db push"
   },
   "author": "",
   "license": "Apache-2.0",
