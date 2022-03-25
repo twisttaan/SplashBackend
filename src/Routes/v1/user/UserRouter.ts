@@ -11,24 +11,40 @@ export default async function AuthRouter(fastify: FastifyInstance) {
     async (request, reply) => {
       const id = request.params.id;
 
-      console.log(request.user);
-
-      if (!request.user) {
-        return reply.code(401).send({
-          message: "Unauthorized, no session.",
-          session: request.user,
-        });
-      }
-
       const user = await prisma.user.findFirst({
         where: {
-          id,
+          OR: [
+            {
+              username: {
+                equals: id,
+                mode: "insensitive",
+              },
+            },
+            {
+              id: {
+                equals: id,
+              },
+            },
+          ],
         },
       });
 
       if (!user) {
         return reply.code(404).send({
           message: "User not found",
+        });
+      }
+
+      if (!request.user) {
+        return reply.code(200).send({
+          message: "User wasn't found in session, sent less data.",
+          user: {
+            id: user.id,
+            username: user.username,
+            displayName: user.displayName,
+            createdAt: user.createdAt,
+            staff: user.staff,
+          },
         });
       }
 
