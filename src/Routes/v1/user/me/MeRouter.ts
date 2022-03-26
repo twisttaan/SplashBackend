@@ -1,3 +1,4 @@
+import { ChatRoomMember, User } from ".prisma/client";
 import { FastifyInstance } from "fastify";
 interface getUserParams {
   id: string;
@@ -10,7 +11,11 @@ export default async function AuthRouter(fastify: FastifyInstance) {
 
     async (request, reply) => {
       const id = request.params.id;
-      const { user } = request;
+      const user = request.user as
+        | (User & {
+            chatRooms: ChatRoomMember[];
+          })
+        | null;
 
       if (!user) {
         return reply.code(401).send({
@@ -28,6 +33,7 @@ export default async function AuthRouter(fastify: FastifyInstance) {
           staff: user.staff,
           inviteUsed: user.inviteUsed,
           email: user.email,
+          chatRooms: user.chatRooms,
         },
       });
     }

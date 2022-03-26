@@ -1,4 +1,4 @@
-import { PrismaClient, User } from ".prisma/client";
+import { ChatRoomMember, PrismaClient, User } from ".prisma/client";
 import { verify } from "argon2";
 import "dotenv/config";
 import Fastify from "fastify";
@@ -22,7 +22,9 @@ declare module "fastify" {
   interface FastifyInstance {
     prisma: PrismaClient;
   }
-  interface PassportUser extends User {}
+  interface PassportUser extends User {
+    chatRooms: ChatRoomMember[];
+  }
   interface FastifySchema {
     validate?: (...arg0: any[]) => ValidationResult;
   }
@@ -73,6 +75,9 @@ fastifyPassport.use(
               },
             },
           ],
+        },
+        include: {
+          chatRooms: true,
         },
       });
 

@@ -8,18 +8,46 @@ datasource db {
 }
 
 model User {
-    id          String   @id @default(cuid())
-    username    String   @unique
+    id          String           @id @default(cuid())
+    username    String           @unique
     displayName String
-    email       String   @unique
+    email       String           @unique
     password    String
     posts       Post[]
-    createdAt   DateTime @default(now())
-    invite      String   @unique
-    inviteUsed  String   @unique
-    staff       Boolean  @default(false)
-    followers   User[]   @relation("UserToUser")
-    following   User[]   @relation("UserToUser")
+    createdAt   DateTime         @default(now())
+    invite      String           @unique
+    inviteUsed  String           @unique
+    staff       Boolean          @default(false)
+    followers   User[]           @relation("UserToUser")
+    following   User[]           @relation("UserToUser")
+    chatRooms   ChatRoomMember[]
+}
+
+model ChatMessage {
+    id         String    @id @default(cuid())
+    text       String
+    createdAt  DateTime  @default(now())
+    userID     String
+    ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
+    chatRoomId String?
+}
+
+model ChatRoomMember {
+    id         String    @id @default(cuid())
+    user       User?     @relation(fields: [userId], references: [id])
+    owner      Boolean   @default(false)
+    ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
+    chatRoomId String?
+    userId     String?
+}
+
+model ChatRoom {
+    id         String           @id @default(cuid())
+    name       String           @unique
+    messages   ChatMessage[]
+    createdAt  DateTime         @default(now())
+    members    ChatRoomMember[]
+    inviteCode String           @unique
 }
 
 model Post {
