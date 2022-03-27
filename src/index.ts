@@ -1,13 +1,17 @@
 import { ChatRoomMember, PrismaClient, User } from ".prisma/client";
 import { verify } from "argon2";
+import cloudinary from "cloudinary";
 import "dotenv/config";
 import Fastify from "fastify";
 import fastifyAutoload from "fastify-autoload";
 import fastifyCors from "fastify-cors";
+import fastifyFileUpload from "fastify-file-upload";
 import fastifyHelmet from "fastify-helmet";
+import multipart from "fastify-multipart";
 import fastifyPassport from "fastify-passport";
 import fastifyRateLimit from "fastify-rate-limit";
 import fastifySecureSession from "fastify-secure-session";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { IVerifyOptions, Strategy } from "passport-local";
 import { join } from "path";
 
@@ -17,10 +21,15 @@ const app = Fastify({
 });
 
 app.prisma = new PrismaClient();
+app.storage = new CloudinaryStorage({
+  cloudinary: cloudinary.v2,
+});
 
 declare module "fastify" {
   interface FastifyInstance {
     prisma: PrismaClient;
+    storage: CloudinaryStorage;
+    cloudinary: typeof cloudinary.v2;
   }
   interface PassportUser extends User {
     chatRooms: ChatRoomMember[];
@@ -30,10 +39,26 @@ declare module "fastify" {
   }
 }
 
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+  secure: true,
+});
+
+app.cloudinary = cloudinary.v2;
+
+app.register(multipart, {
+  addToBody: true,
+  sharedSchemaId: "MultipartFileType",
+});
+
 app.register(fastifyCors, {
   origin: ["https://splash.evie.pw", /^http:\/\/localhost:\d+$/],
   credentials: true,
 });
+
+app.register(fastifyFileUpload);
 
 app.register(fastifyRateLimit, {
   timeWindow: 1000 * 60,

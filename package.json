@@ -22,15 +22,19 @@
   },
   "dependencies": {
     "argon2": "^0.28.5",
+    "cloudinary": "^1.29.0",
     "dotenv": "^10.0.0",
     "fastify": "^3.18.1",
     "fastify-autoload": "^3.11.0",
     "fastify-cors": "^6.0.3",
+    "fastify-file-upload": "^3.0.1",
     "fastify-helmet": "^7.0.1",
+    "fastify-multipart": "^5.3.1",
     "fastify-passport": "^0.5.0",
     "fastify-rate-limit": "^5.8.0",
     "fastify-secure-session": "^3.0.0",
     "joi": "^17.6.0",
+    "multer-storage-cloudinary": "^4.0.0",
     "passport-local": "^1.0.0",
     "prisma": "^3.11.0"
   }

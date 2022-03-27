@@ -21,6 +21,7 @@ model User {
     followers   User[]           @relation("UserToUser")
     following   User[]           @relation("UserToUser")
     chatRooms   ChatRoomMember[]
+    pfpURI      String?
 }
 
 model ChatMessage {
@@ -52,7 +53,7 @@ model ChatRoom {
 
 model Post {
     id        String   @id @default(cuid())
-    cdn       String
+    imageURI  String
     title     String
     content   String
     published Boolean
